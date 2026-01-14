@@ -15,7 +15,10 @@ const orderAdminRoutes = require("./routes/adminOrderRoutes");
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*',
+  credentials: true
+}));
 
 dotenv.config();
 
@@ -38,6 +41,12 @@ app.use("/api/subscribe", subscribeRoutes);
 app.use("/api/admin/users", adminRoutes);
 app.use("/api/admin/products", productAdminRoutes);
 app.use("/api/admin/orders", orderAdminRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ message: err.message || 'Server Error' });
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
